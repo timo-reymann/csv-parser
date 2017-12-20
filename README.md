@@ -1,9 +1,11 @@
 # CSV-Parser
-Parse csv files and other seperated values useing java.
+Parse csv files and other seperated values using java.
 
 # How to use?
 
 ## Create your bean class
+
+Please keep in mind that you need an zero-args constructor for this parser to work properly!
 
 ### ... using the index for mapping
 ```java
