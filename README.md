@@ -3,6 +3,16 @@ Parse csv files and other seperated values using java.
 
 # How to use?
 
+## Add to your depenencies
+
+```xml
+<dependency>
+    <groupId>com.github.timo-reymann</groupId>
+    <artifactId>csv-parser</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
 ## Create your bean class
 
 Please keep in mind that you need an zero-args constructor for this parser to work properly!
