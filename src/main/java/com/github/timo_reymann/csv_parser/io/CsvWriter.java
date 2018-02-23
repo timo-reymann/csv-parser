@@ -63,7 +63,7 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
      * @param file        File to write
      * @param append      Append to output
      * @param hasHeadings Has the file headings, if this is a new file headers are automatically generated
-     * @param seperator
+     * @param seperator   Seperator for csv file
      * @throws IOException Error opening file streams
      */
     public CsvWriter(Class<T> clazz, File file, boolean append, boolean hasHeadings, String seperator) throws IOException {

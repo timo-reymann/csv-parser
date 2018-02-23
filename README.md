@@ -9,7 +9,7 @@ Parse csv files and other seperated values using java.
 <dependency>
     <groupId>com.github.timo-reymann</groupId>
     <artifactId>csv-parser</artifactId>
-    <version>1.0</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
@@ -20,7 +20,7 @@ Please keep in mind that you need an zero-args constructor for this parser to wo
 ### ... using the index for mapping
 ```java
 @Data
-class MyBean {
+public class MyBean {
     @CsvColumn(index = 0)
     private Integer id;
 
@@ -103,13 +103,19 @@ CsvReader<MyBean> reader = new CsvReader.Builder<MyBean>()
 reader.lines().forEach(System.out::println);
 ```
 
+
+## Java 9
+The parser is compatible with Java 9! There are only two things for you to do:
+1. Add to your module: ``requires com.github.timo_reymann.csv_parser``
+2. Open your package for reflection containing bean classes like this: ``opens my.entities to com.github.timo_reymann.csv_parser``
+
+Thats it!
+
+
 ## Need further information?
 Just send me a mail :)
+
 
 ## Found a bug?
 [Create a issue](https://github.com/timo-reymann/csv-parser/issues/new)
 
-
-## Java 9
-The csv parser currently is compatible with java9 but doesnt explicity declares a module. To use it with java9 add ``requires csv.parser`` and open your bean packages for reflection to ``csv.parser``. 
-**But be aware:** The name of the module may change at any time!
