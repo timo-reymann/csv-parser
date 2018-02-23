@@ -108,3 +108,8 @@ Just send me a mail :)
 
 ## Found a bug?
 [Create a issue](https://github.com/timo-reymann/csv-parser/issues/new)
+
+
+## Java 9
+The csv parser currently is compatible with java9 but doesnt explicity declares a module. To use it with java9 add ``requires csv.parser`` and open your bean packages for reflection to ``csv.parser``. 
+**But be aware:** The name of the module may change at any time!
