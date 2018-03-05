@@ -9,7 +9,7 @@ Parse csv files and other seperated values using java.
 <dependency>
     <groupId>com.github.timo-reymann</groupId>
     <artifactId>csv-parser</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 ```
 
