@@ -38,7 +38,7 @@ public class CsvMetaDataReader<T> {
      *
      * @return Map with fields
      */
-    public HashMap<CsvColumn, Field> getFieldsToMap() {
+    private HashMap<CsvColumn, Field> getFieldsToMap() {
         HashMap<CsvColumn, Field> csvColumnFieldHashMap = CACHE.get(clazz);
 
         if (csvColumnFieldHashMap != null) {
