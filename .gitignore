@@ -1,4 +1,4 @@
 .idea
 target/
-**/*.csv
 *.iml
+tmp_*
