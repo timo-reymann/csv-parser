@@ -111,6 +111,8 @@ The parser is compatible with Java 9! There are only two things for you to do:
 
 Thats it!
 
+## JavaDoc
+If you are looking for the JavaDoc, its [here](https://www.javadoc.io/doc/com.github.timo-reymann/csv-parser/)
 
 ## Need further information?
 Just send me a mail :)
