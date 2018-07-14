@@ -1,6 +1,11 @@
 # CSV-Parser
 Parse csv files and other seperated values using java.
 
+## Limitations
+Currently all primitive types are suppported, plus LocalDate and LocalDateTime.
+
+To use primitive types you must use the boxed types.
+
 # How to use?
 
 ## Add to your depenencies
