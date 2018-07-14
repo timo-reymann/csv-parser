@@ -57,7 +57,7 @@ public final class Converter {
         if (value == null)
             return "";
 
-        return FORMATTER_CACHE.get(pattern).format(value);
+        return getFormatter(pattern).format(value);
     }
 
     public String formatLocalDate(String pattern, LocalDate value) {
