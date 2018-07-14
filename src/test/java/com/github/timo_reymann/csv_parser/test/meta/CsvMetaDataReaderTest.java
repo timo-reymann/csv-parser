@@ -21,7 +21,7 @@ public class CsvMetaDataReaderTest {
         Assert.assertNotNull(someNumberCol);
         Assert.assertEquals(Field.class, someNumberCol.getClass());
         Assert.assertEquals(Integer.class, someNumberCol.getType());
-        Assert.assertEquals(true, someNumberCol.isAccessible());
+        Assert.assertTrue(someNumberCol.isAccessible());
 
         Field someTextCol = effectiveValueForColumnMapping.get("someTextCol");
         Assert.assertNotNull(someTextCol);

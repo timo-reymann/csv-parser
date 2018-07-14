@@ -1,11 +1,14 @@
 package com.github.timo_reymann.csv_parser.io;
 
 import com.github.timo_reymann.csv_parser.meta.CsvMetaDataReader;
+import com.github.timo_reymann.csv_parser.util.Converter;
 import com.github.timo_reymann.csv_parser.util.Platform;
 import lombok.Data;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -57,6 +60,11 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
     private BufferedWriter bufferedWriter;
 
     /**
+     * Converter api
+     */
+    private final Converter converter = new Converter();
+
+    /**
      * Create new csv writer
      *
      * @param clazz       Class for bean
@@ -102,9 +110,23 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
         HashMap<Object, Field> effectiveMapping = csvMetaDataReader.getEffectiveValueForColumnMapping();
         String[] data = new String[effectiveMapping.size()];
         for (Map.Entry<Object, Field> entry : effectiveMapping.entrySet()) {
-            data[(int) entry.getKey()] = String.valueOf(entry.getValue().get(bean));
+            data[(int) entry.getKey()] = formatValue(entry.getValue(), bean);
         }
         return data;
+    }
+
+    private String formatValue(Field field, Object obj) throws IllegalAccessException {
+        Object value = field.get(obj);
+        Class<?> type = field.getType();
+        String format = csvMetaDataReader.getCsvColumnForField(field).format();
+
+        if (type.isAssignableFrom(LocalDateTime.class)) {
+            return converter.formatLocalDateTime(format, (LocalDateTime) value);
+        } else if (type.isAssignableFrom(LocalDate.class)) {
+            return converter.formatLocalDate(format, (LocalDate) value);
+        } else {
+            return value == null ? "" : value.toString();
+        }
     }
 
     /**
@@ -154,7 +176,7 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
         String[] data = new String[effectiveMapping.size()];
         for (Map.Entry<Object, Field> entry : effectiveMapping.entrySet()) {
             int index = list.indexOf(entry.getKey().toString());
-            data[index] = entry.getValue().get(bean).toString();
+            data[index] = formatValue(entry.getValue(), bean);
         }
         return data;
     }

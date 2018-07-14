@@ -8,6 +8,8 @@ import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithNumericIndex
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CsvWriterTest extends CsvParserTestCase {
     private static File TMP_FILE_WRITE_HEADING = new File("tmp_heading.csv");
@@ -63,14 +65,28 @@ public class CsvWriterTest extends CsvParserTestCase {
     public void testWriteHeading() throws IOException, IllegalAccessException {
         TestEntityWithHeadings testEntityWithHeadings = new TestEntityWithHeadings();
 
-        for (int i = 1; i < 3; i++) {
-            testEntityWithHeadings.setSomeNumber(i);
-            testEntityWithHeadings.setSomeText("This is line" + i);
-            csvWriterHeadingIndex.writeLine(testEntityWithHeadings);
-        }
+        // Line 1
+        testEntityWithHeadings.setSomeNumber(1);
+        testEntityWithHeadings.setSomeText("This is line1");
+        testEntityWithHeadings.setSomeBoolean(false);
+        testEntityWithHeadings.setSomeDouble(45.0);
+        testEntityWithHeadings.setSomeFloat(120.122f);
+        testEntityWithHeadings.setLocalDate(LocalDate.of(2017, 6, 7));
+        testEntityWithHeadings.setLocalDateTime(LocalDateTime.of(2018, 10, 2, 15, 30, 12));
+        csvWriterHeadingIndex.writeLine(testEntityWithHeadings);
+
+        // Line 2
+        testEntityWithHeadings.setSomeNumber(2);
+        testEntityWithHeadings.setSomeText("This is line2");
+        testEntityWithHeadings.setSomeBoolean(true);
+        testEntityWithHeadings.setSomeDouble(100.45);
+        testEntityWithHeadings.setSomeFloat(120.122334f);
+        testEntityWithHeadings.setLocalDate(LocalDate.of(2017, 8, 5));
+        testEntityWithHeadings.setLocalDateTime(LocalDateTime.of(2017, 6, 4, 15, 10, 20));
+        csvWriterHeadingIndex.writeLine(testEntityWithHeadings);
 
         csvWriterHeadingIndex.close();
 
-        FileHelper.assertContentEquals(FileHelper.loadResourceFromTestClasspath("with_headings.csv"),TMP_FILE_WRITE_HEADING);
+        FileHelper.assertContentEquals(FileHelper.loadResourceFromTestClasspath("with_headings.csv"), TMP_FILE_WRITE_HEADING);
     }
 }

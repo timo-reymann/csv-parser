@@ -1,13 +1,17 @@
 package com.github.timo_reymann.csv_parser.io;
 
 import com.github.timo_reymann.csv_parser.meta.CsvMetaDataReader;
+import com.github.timo_reymann.csv_parser.util.Converter;
 import lombok.AccessLevel;
 import lombok.Setter;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -58,6 +62,11 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * Meta data api
      */
     private CsvMetaDataReader<T> csvMetaDataReader;
+
+    /**
+     * Converter api
+     */
+    private final Converter converter = new Converter();
 
     /**
      * Create CsvReader
@@ -127,7 +136,13 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
         T obj = clazz.newInstance();
         HashMap<Object, Field> effectiveValueForColumnMapping = csvMetaDataReader.getEffectiveValueForColumnMapping();
         for (Map.Entry<Integer, String> headingEntry : headings.entrySet()) {
-            String val = data[headingEntry.getKey()];
+            String val;
+            try {
+                val = data[headingEntry.getKey()];
+            } catch (ArrayIndexOutOfBoundsException e) { // No element found
+                val = null;
+            }
+
             Field field = effectiveValueForColumnMapping.get(headingEntry.getValue());
 
             // Ignore if field is not mapped
@@ -148,18 +163,35 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      */
     private void setValue(Field field, Object obj, String value) throws IllegalAccessException {
         Class<?> type = field.getType();
+        Function<String, Object> mapper = null;
         // Basic types
-        if (type.isAssignableFrom(Integer.class)) {
-            field.set(obj, Integer.parseInt(value));
+        if (type.isAssignableFrom(String.class)) {
+            mapper = String::valueOf;
+        } else if (type.isAssignableFrom(Integer.class)) {
+            mapper = converter::convertToInt;
         } else if (type.isAssignableFrom(Boolean.class)) {
-            field.set(obj, Boolean.valueOf(value));
+            mapper = converter::convertToBoolean;
         } else if (type.isAssignableFrom(Double.class)) {
-            field.set(obj, Double.parseDouble(value));
+            mapper = converter::convertToDouble;
         } else if (type.isAssignableFrom(Float.class)) {
-            field.set(obj, Float.parseFloat(value));
+            mapper = converter::convertToFloat;
+        } else if (type.isAssignableFrom(LocalDate.class)) {
+            mapper = (input) -> converter.convertToLocalDate(getFormatForColumn(field), input);
+        } else if (type.isAssignableFrom(LocalDateTime.class)) {
+            mapper = (input) -> converter.convertToLocalDateTime(getFormatForColumn(field), input);
         } else {
             // 'Castable' types, may produce error
             field.set(obj, field.getType().cast(value));
+        }
+
+        converter.setField(field, obj, mapper.apply(value));
+    }
+
+    private String getFormatForColumn(Field field) {
+        try {
+            return csvMetaDataReader.getCsvColumnForField(field).format();
+        } catch (Exception e) {
+            throw new InvalidArgumentException("format", "Format for column must be set if the datatype requires a format");
         }
     }
 

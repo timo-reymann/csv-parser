@@ -14,7 +14,7 @@ public class CsvMetaDataReader<T> {
     /**
      * Cache for mapping of csv columns to fields
      */
-    private static HashMap<Class, HashMap<CsvColumn, Field>> CACHE = new HashMap<>();
+    private static HashMap<Class, HashMap<Field, CsvColumn>> CACHE = new HashMap<>();
     /**
      * Class object of entity
      */
@@ -22,7 +22,7 @@ public class CsvMetaDataReader<T> {
     /**
      * Mapping of csv columns to fields
      */
-    private HashMap<CsvColumn, Field> fields;
+    private HashMap<Field, CsvColumn> fields;
 
     /**
      * Create new meta data reader
@@ -38,8 +38,8 @@ public class CsvMetaDataReader<T> {
      *
      * @return Map with fields
      */
-    private HashMap<CsvColumn, Field> getFieldsToMap() {
-        HashMap<CsvColumn, Field> csvColumnFieldHashMap = CACHE.get(clazz);
+    private HashMap<Field, CsvColumn> getFieldsToMap() {
+        HashMap<Field, CsvColumn> csvColumnFieldHashMap = CACHE.get(clazz);
 
         if (csvColumnFieldHashMap != null) {
             return csvColumnFieldHashMap;
@@ -52,18 +52,22 @@ public class CsvMetaDataReader<T> {
         return fields;
     }
 
+    public CsvColumn getCsvColumnForField(Field field) {
+        return getFieldsToMap().get(field);
+    }
+
     /**
      * Get effective value for column mapping
      *
      * @return HashMap with fields indexed by Effective index (headerName/index)
      */
     public HashMap<Object, Field> getEffectiveValueForColumnMapping() {
-        HashMap<CsvColumn, Field> fieldsToMap = getFieldsToMap();
+        HashMap<Field, CsvColumn> fieldsToMap = getFieldsToMap();
         HashMap<Object, Field> effective = new HashMap<>();
 
 
-        for (Map.Entry<CsvColumn, Field> es : fieldsToMap.entrySet()) {
-            effective.put(getEffectiveValueForColumnMapping(es.getKey()), es.getValue());
+        for (Map.Entry<Field, CsvColumn> es : fieldsToMap.entrySet()) {
+            effective.put(getEffectiveValueForColumnMapping(es.getValue()), es.getKey());
         }
 
         return effective;
@@ -123,7 +127,7 @@ public class CsvMetaDataReader<T> {
 
         validate(csvColumn);
         field.setAccessible(true);
-        fields.put(csvColumn, field);
+        fields.put(field, csvColumn);
     }
 
     /**

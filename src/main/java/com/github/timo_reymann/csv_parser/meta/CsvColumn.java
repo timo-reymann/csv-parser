@@ -24,4 +24,11 @@ public @interface CsvColumn {
      * @return Header name
      */
     String headerName() default "";
+
+    /**
+     * Format for column, used only if datatype is compatible with formatting e. g. {@link java.time.LocalDate}
+     *
+     * @return Format of column
+     */
+    String format() default "none";
 }
