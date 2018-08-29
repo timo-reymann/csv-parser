@@ -7,7 +7,7 @@
     <groupId>com.github.timo-reymann</groupId>
     <url>https://github.com/timo-reymann/csv-parser</url>
     <artifactId>csv-parser</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>csv-parser</name>

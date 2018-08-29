@@ -62,6 +62,12 @@ public class CsvWriterTest extends CsvParserTestCase {
         FileHelper.assertContentEquals(FileHelper.loadResourceFromTestClasspath("without_headings.csv"), TMP_FILE_WRITE_NUMERIC);
     }
 
+    public void testHeadingWrite() throws IllegalAccessException, IOException, InstantiationException {
+        csvWriterHeadingIndex.writeFileHeading();
+        csvWriterHeadingIndex.close();
+        FileHelper.assertContentEquals(FileHelper.loadResourceFromTestClasspath("headings_only.csv"), TMP_FILE_WRITE_HEADING);
+    }
+
     public void testWriteHeading() throws IOException, IllegalAccessException {
         TestEntityWithHeadings testEntityWithHeadings = new TestEntityWithHeadings();
 

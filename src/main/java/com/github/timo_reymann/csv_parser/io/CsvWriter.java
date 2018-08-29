@@ -182,6 +182,19 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
     }
 
     /**
+     * Write only file headings to file without any data
+     *
+     * @throws IllegalAccessException Error getting fields of entity
+     * @throws InstantiationException Error creating new instance of entity
+     * @throws IOException            Error writing to file
+     */
+    public void writeFileHeading() throws IllegalAccessException, InstantiationException, IOException {
+        if (isHasHeadings()) {
+            mapByHeading(clazz.newInstance());
+        }
+    }
+
+    /**
      * Write bean to file
      *
      * @param bean Bean to write
