@@ -1,11 +1,14 @@
 package com.github.timo_reymann.csv_parser.test.io;
 
+import com.github.timo_reymann.csv_parser.exception.ParseException;
 import com.github.timo_reymann.csv_parser.io.CsvReader;
+import com.github.timo_reymann.csv_parser.io.Seperator;
 import com.github.timo_reymann.csv_parser.test.CsvParserTestCase;
 import com.github.timo_reymann.csv_parser.test.helper.FileHelper;
 import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithHeadings;
 import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithNumericIndex;
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -65,19 +68,19 @@ public class CsvReaderTest extends CsvParserTestCase {
         assertEquals(new Integer(1), testEntityWithHeadings.getSomeNumber());
         assertEquals("This is line1", testEntityWithHeadings.getSomeText());
         assertEquals(Boolean.FALSE, testEntityWithHeadings.getSomeBoolean());
-        assertEquals(45.0,testEntityWithHeadings.getSomeDouble());
-        assertEquals(120.122f,testEntityWithHeadings.getSomeFloat());
-        assertEquals(LocalDate.of(2017,6,7),testEntityWithHeadings.getLocalDate());
-        assertEquals(LocalDateTime.of(2018,10,2,15,30,12),testEntityWithHeadings.getLocalDateTime());
+        assertEquals(45.0, testEntityWithHeadings.getSomeDouble());
+        assertEquals(120.122f, testEntityWithHeadings.getSomeFloat());
+        assertEquals(LocalDate.of(2017, 6, 7), testEntityWithHeadings.getLocalDate());
+        assertEquals(LocalDateTime.of(2018, 10, 2, 15, 30, 12), testEntityWithHeadings.getLocalDateTime());
 
         testEntityWithHeadings = csvReaderWithHeading.readLine();
         assertEquals(new Integer(2), testEntityWithHeadings.getSomeNumber());
         assertEquals("This is line2", testEntityWithHeadings.getSomeText());
-        assertEquals(Boolean.TRUE,testEntityWithHeadings.getSomeBoolean());
-        assertEquals(100.45,testEntityWithHeadings.getSomeDouble());
-        assertEquals(120.122334679f,testEntityWithHeadings.getSomeFloat());
-        assertEquals(LocalDate.of(2017,8,5),testEntityWithHeadings.getLocalDate());
-        assertEquals(LocalDateTime.of(2017,6,4,15,10,20),testEntityWithHeadings.getLocalDateTime());
+        assertEquals(Boolean.TRUE, testEntityWithHeadings.getSomeBoolean());
+        assertEquals(100.45, testEntityWithHeadings.getSomeDouble());
+        assertEquals(120.122334679f, testEntityWithHeadings.getSomeFloat());
+        assertEquals(LocalDate.of(2017, 8, 5), testEntityWithHeadings.getLocalDate());
+        assertEquals(LocalDateTime.of(2017, 6, 4, 15, 10, 20), testEntityWithHeadings.getLocalDateTime());
 
         csvReaderWithHeading.flush();
     }
@@ -91,6 +94,22 @@ public class CsvReaderTest extends CsvParserTestCase {
             assertEquals(new Integer(i + 1), testEntityWithHeadings.getSomeNumber());
             assertEquals("This is line" + (i + 1), testEntityWithHeadings.getSomeText());
         }
+    }
 
+
+    @Test(expected = com.github.timo_reymann.csv_parser.exception.ParseException.class)
+    public void testErrorHandling() throws IllegalAccessException, IOException, InstantiationException, ParseException {
+        CsvReader<TestEntityWithNumericIndex> readerForInvalidFile = new CsvReader.Builder<TestEntityWithNumericIndex>()
+                .file(FileHelper.loadResourceFromTestClasspath("invalid_data.csv"))
+                .forClass(TestEntityWithNumericIndex.class)
+                .seperatedBy(Seperator.SEMICOLON)
+                .build();
+
+        try {
+            readerForInvalidFile.readLine();
+        } catch (ParseException e) {
+            assertNotNull(e);
+            assertNotNull(e.getMessage());
+        }
     }
 }

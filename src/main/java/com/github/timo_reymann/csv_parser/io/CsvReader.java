@@ -1,5 +1,6 @@
 package com.github.timo_reymann.csv_parser.io;
 
+import com.github.timo_reymann.csv_parser.exception.ParseException;
 import com.github.timo_reymann.csv_parser.meta.CsvMetaDataReader;
 import com.github.timo_reymann.csv_parser.util.Converter;
 import lombok.AccessLevel;
@@ -180,11 +181,22 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
         } else if (type.isAssignableFrom(LocalDateTime.class)) {
             mapper = (input) -> converter.convertToLocalDateTime(getFormatForColumn(field), input);
         } else {
-            // 'Castable' types, may produce error
-            field.set(obj, field.getType().cast(value));
+            try {
+                // 'Castable' types, may produce error
+                field.set(obj, field.getType().cast(value));
+            } catch (Exception e) {
+                throw new ParseException("Error parsing value '" + value + "'. Assigment for field failed", e);
+            }
+
+            // Leave method because no mapper is assigned
+            return;
         }
 
-        converter.setField(field, obj, mapper.apply(value));
+        try {
+            converter.setField(field, obj, mapper.apply(value));
+        } catch (Exception e) {
+            throw new ParseException("Error assigning value '" + value + "' to field " + field.getName() + "", e);
+        }
     }
 
     private String getFormatForColumn(Field field) {
