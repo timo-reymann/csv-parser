@@ -65,7 +65,7 @@ public class CsvReaderTest extends CsvParserTestCase {
 
         assertNotNull(testEntityWithHeadings);
         assertEquals(new Integer(1), testEntityWithHeadings.getSomeNumber());
-        assertEquals("This is line1", testEntityWithHeadings.getSomeText());
+        assertEquals("Thöis is line1", testEntityWithHeadings.getSomeText());
         assertEquals(Boolean.FALSE, testEntityWithHeadings.getSomeBoolean());
         assertEquals(45.0, testEntityWithHeadings.getSomeDouble());
         assertEquals(120.122f, testEntityWithHeadings.getSomeFloat());
@@ -74,7 +74,7 @@ public class CsvReaderTest extends CsvParserTestCase {
 
         testEntityWithHeadings = csvReaderWithHeading.readLine();
         assertEquals(new Integer(2), testEntityWithHeadings.getSomeNumber());
-        assertEquals("This is line2", testEntityWithHeadings.getSomeText());
+        assertEquals("Thöis is line2", testEntityWithHeadings.getSomeText());
         assertEquals(Boolean.TRUE, testEntityWithHeadings.getSomeBoolean());
         assertEquals(100.45, testEntityWithHeadings.getSomeDouble());
         assertEquals(120.122334679f, testEntityWithHeadings.getSomeFloat());
@@ -91,7 +91,7 @@ public class CsvReaderTest extends CsvParserTestCase {
             TestEntityWithHeadings testEntityWithHeadings = collect.get(i);
             assertNotNull(collect);
             assertEquals(new Integer(i + 1), testEntityWithHeadings.getSomeNumber());
-            assertEquals("This is line" + (i + 1), testEntityWithHeadings.getSomeText());
+            assertEquals("Thöis is line" + (i + 1), testEntityWithHeadings.getSomeText());
         }
     }
 

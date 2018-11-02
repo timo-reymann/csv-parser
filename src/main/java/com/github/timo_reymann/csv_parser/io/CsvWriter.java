@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -48,11 +49,6 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
      * Seperator for lines
      */
     private String seperator = Seperator.SEMICOLON;
-
-    /**
-     * File writer instance
-     */
-    private FileWriter fileWriter;
 
     /**
      * Buffered Writer to write to file
@@ -224,8 +220,7 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
      * @throws IOException Error open file
      */
     private void init() throws IOException {
-        fileWriter = new FileWriter(file, append);
-        bufferedWriter = new BufferedWriter(fileWriter);
+        bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file,append), StandardCharsets.UTF_8));
     }
 
     /**
@@ -235,9 +230,6 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
      */
     @Override
     public void flush() throws IOException {
-        if (fileWriter != null)
-            fileWriter.flush();
-
         if (bufferedWriter != null)
             bufferedWriter.flush();
     }
@@ -251,9 +243,6 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
     public void close() throws IOException {
         if (bufferedWriter != null)
             bufferedWriter.close();
-
-        if (fileWriter != null)
-            fileWriter.close();
     }
 
     public static class Builder<T> {

@@ -73,7 +73,7 @@ public class CsvWriterTest extends CsvParserTestCase {
 
         // Line 1
         testEntityWithHeadings.setSomeNumber(1);
-        testEntityWithHeadings.setSomeText("This is line1");
+        testEntityWithHeadings.setSomeText("Thöis is line1");
         testEntityWithHeadings.setSomeBoolean(false);
         testEntityWithHeadings.setSomeDouble(45.0);
         testEntityWithHeadings.setSomeFloat(120.122f);
@@ -83,7 +83,7 @@ public class CsvWriterTest extends CsvParserTestCase {
 
         // Line 2
         testEntityWithHeadings.setSomeNumber(2);
-        testEntityWithHeadings.setSomeText("This is line2");
+        testEntityWithHeadings.setSomeText("Thöis is line2");
         testEntityWithHeadings.setSomeBoolean(true);
         testEntityWithHeadings.setSomeDouble(100.45);
         testEntityWithHeadings.setSomeFloat(120.122334f);
