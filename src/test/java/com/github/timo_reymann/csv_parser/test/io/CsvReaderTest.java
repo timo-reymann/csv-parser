@@ -7,7 +7,6 @@ import com.github.timo_reymann.csv_parser.test.CsvParserTestCase;
 import com.github.timo_reymann.csv_parser.test.helper.FileHelper;
 import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithHeadings;
 import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithNumericIndex;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.Test;
 
 import java.io.IOException;
