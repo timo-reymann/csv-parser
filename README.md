@@ -76,7 +76,6 @@ class MyBean {
 CsvWriter<MyBean> writer = new CsvWriter.Builder<MyBean>()
              .forClass(MyBean.class)            // entity class
              .file(new File("customers.csv"))   // file
-             .inputStream(myInputStream)        // or even stream
              .noAppend()                        // replace file every time
              .build();
 
@@ -102,6 +101,7 @@ writer.close();
 CsvReader<MyBean> reader = new CsvReader.Builder<MyBean>()
                 .forClass(MyBean.class)         // bean class object
                 .file(new File("test.csv"))     // specify file
+                .inputStream(myInputStream)        // or even stream
                 .hasHeading()                   // file has headings
                 .build();
 
