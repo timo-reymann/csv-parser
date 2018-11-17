@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * Underlying file reader
      */
     @Setter(AccessLevel.PROTECTED)
-    private FileReader fileReader;
+    private InputStreamReader inputStream;
 
     /**
      * Buffered reader for reading lines
@@ -39,12 +40,6 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      */
     @Setter(AccessLevel.PROTECTED)
     private Class<T> clazz;
-
-    /**
-     * CSV file to read
-     */
-    @Setter(AccessLevel.PROTECTED)
-    private File file;
 
     /**
      * Csv file has header in first line
@@ -78,11 +73,25 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * @throws FileNotFoundException File was not found on disk
      */
     public CsvReader(File file, Class<T> clazz, boolean hasHeading) throws FileNotFoundException {
-        this.file = file;
+        this(clazz, hasHeading);
+        initUsingFile(file);
+    }
+
+    public CsvReader(InputStream inputStream, Class<T> clazz, boolean hasHeading) {
+        this(clazz, hasHeading);
+        initUsingInputStream(inputStream);
+    }
+
+    /**
+     * Create CsvReader
+     *
+     * @param clazz      Class of bean to read
+     * @param hasHeading Has the file headers for column names
+     */
+    private CsvReader(Class<T> clazz, boolean hasHeading) {
         this.clazz = clazz;
         this.csvMetaDataReader = new CsvMetaDataReader<>(clazz);
         this.setHasHeading(hasHeading);
-        init();
     }
 
     /**
@@ -91,7 +100,9 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * @param fileName Name of file
      * @param clazz    Class of bean
      * @throws FileNotFoundException File was not found on disk
+     * @deprecated Deprecated due to implicit boolean parameter
      */
+    @Deprecated
     public CsvReader(String fileName, Class<T> clazz) throws FileNotFoundException {
         this(new File(fileName), clazz, false);
     }
@@ -117,7 +128,7 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      *                                no default constructor without parameters is available or an exception is thrown during initalization
      * @throws IllegalAccessException Constructor is private
      */
-    private T map(String[] data) throws InstantiationException, IllegalAccessException {
+    private T map(String[] data) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         if (hasHeading) {
             return mapByHeading(data);
         }
@@ -133,8 +144,8 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * @throws InstantiationException Error creating bean instance, this occurs when
      *                                no default constructor without parameters is available or an exception is thrown during initalization
      */
-    private T mapByHeading(String[] data) throws IllegalAccessException, InstantiationException {
-        T obj = clazz.newInstance();
+    private T mapByHeading(String[] data) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        T obj = clazz.getConstructor().newInstance();
         HashMap<Object, Field> effectiveValueForColumnMapping = csvMetaDataReader.getEffectiveValueForColumnMapping();
         for (Map.Entry<Integer, String> headingEntry : headings.entrySet()) {
             String val;
@@ -160,9 +171,8 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * @param field Field
      * @param obj   Object to set field in
      * @param value Value to set to field
-     * @throws IllegalAccessException Error setting field
      */
-    private void setValue(Field field, Object obj, String value) throws IllegalAccessException {
+    private void setValue(Field field, Object obj, String value) {
         Class<?> type = field.getType();
         Function<String, Object> mapper = null;
         // Basic types
@@ -267,17 +277,33 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
     }
 
     /**
-     * Intialize {@link FileReader} instance and {@link BufferedReader} for specified file
+     * Initialize input stream and {@link BufferedReader} for specified file
      *
+     * @param file File
      * @throws FileNotFoundException File was not found on disk
      */
-    private void init() throws FileNotFoundException {
-        fileReader = new FileReader(file);
-        bufferedReader = new BufferedReader(fileReader);
+    private void initUsingFile(File file) throws FileNotFoundException {
+        inputStream = new FileReader(file);
+        bufferedReader = new BufferedReader(inputStream);
         try {
             getHeadings();
         } catch (IOException e) {
             throw new FileNotFoundException();
+        }
+    }
+
+    /**
+     * Initialize
+     *
+     * @param inputStream Input stream to use
+     */
+    private void initUsingInputStream(InputStream inputStream) {
+        this.inputStream = new InputStreamReader(inputStream);
+        this.bufferedReader = new BufferedReader(this.inputStream);
+        try {
+            getHeadings();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("InputStream does not contain headings");
         }
     }
 
@@ -287,8 +313,8 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * @throws IOException Error while trying to close readers
      */
     public void close() throws IOException {
-        if (this.fileReader != null) {
-            this.fileReader.close();
+        if (this.inputStream != null) {
+            this.inputStream.close();
         }
 
         if (this.bufferedReader != null) {
@@ -304,7 +330,7 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * @throws IllegalAccessException Error mapping fields
      * @throws InstantiationException Error creating new bean instance for mapping
      */
-    public T readLine() throws IOException, IllegalAccessException, InstantiationException {
+    public T readLine() throws IOException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         return map(readLineAndSplitBySeperator());
     }
 
@@ -319,7 +345,7 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
                 .map(l -> {
                     try {
                         return map(splitBySeperator(l));
-                    } catch (InstantiationException | IllegalAccessException e) {
+                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                         // Ignore Exception
                     }
                     return null;
@@ -329,16 +355,12 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
     /**
      * Flush {@link FileReader} and {@link BufferedReader}
      *
-     * @throws IOException Error flushing readers
+     * @deprecated Flush will be removed due to support for direct reading from an file stream, where flush is not reliable anymore
      */
     @Override
-    public void flush() throws IOException {
-        try {
-            close();
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
-        init();
+    @Deprecated
+    public void flush() {
+        this.bufferedReader = new BufferedReader(inputStream);
     }
 
     /**
@@ -379,6 +401,11 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
          * Csv file
          */
         private File file;
+
+        /**
+         * Input stream
+         */
+        private InputStream inputStream;
 
         /**
          * The file has a first line with headings
@@ -434,13 +461,30 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
         }
 
         /**
+         * Set the input stream to use instead of file
+         *
+         * @param inputStream InputStream to use
+         * @return Current builder
+         */
+        public Builder<T> inputStream(InputStream inputStream) {
+            this.inputStream = inputStream;
+            return this;
+        }
+
+        /**
          * Build csv reader instance
          *
          * @return Ready to use csv reader
          */
         public CsvReader<T> build() {
-            if (file == null || !file.exists()) {
-                throw new InvalidArgumentException("file", file);
+            if (inputStream != null && file != null) {
+                throw new IllegalArgumentException("Decide to use inputStream or file, both at the same time are not supported");
+            }
+
+            if (file != null) {
+                if (!file.exists()) {
+                    throw new InvalidArgumentException("file", file);
+                }
             }
 
             if (clazz == null) {
@@ -448,10 +492,15 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
             }
 
             try {
-                csvReader = new CsvReader<T>(file, clazz, hasHeading);
+                if (inputStream != null) {
+                    csvReader = new CsvReader<>(inputStream, clazz, hasHeading);
+                } else {
+                    csvReader = new CsvReader<>(file, clazz, hasHeading);
+                }
             } catch (FileNotFoundException e) {
                 throw new InvalidArgumentException("file", e);
             }
+
             csvReader.setHasHeading(this.hasHeading);
 
             if (this.seperator != null && !this.seperator.isEmpty()) {
