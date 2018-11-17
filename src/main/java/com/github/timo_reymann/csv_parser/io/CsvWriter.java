@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,7 +42,7 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
     private CsvMetaDataReader<T> csvMetaDataReader;
 
     /**
-     * File to save
+     * File to save, this may be null if only stream is used
      */
     private File file;
 
@@ -54,6 +55,11 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
      * Buffered Writer to write to file
      */
     private BufferedWriter bufferedWriter;
+
+    /**
+     * Bool if csv writer has written data
+     */
+    private boolean hasWrittenData;
 
     /**
      * Converter api
@@ -71,13 +77,40 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
      * @throws IOException Error opening file streams
      */
     public CsvWriter(Class<T> clazz, File file, boolean append, boolean hasHeadings, String seperator) throws IOException {
+        this(clazz, append, hasHeadings, seperator);
+        initUsingFile(file);
+    }
+
+    /**
+     * Create new csv writer
+     *
+     * @param clazz        Class for bean
+     * @param outputStream OutputStream to write to
+     * @param append       Append to output
+     * @param hasHeadings  Has the file headings, if this is a new file headers are automatically generated
+     * @param seperator    Seperator for csv file
+     * @throws IOException Error opening file streams
+     */
+    public CsvWriter(Class<T> clazz, OutputStream outputStream, boolean append, boolean hasHeadings, String seperator) throws IOException {
+        this(clazz, append, hasHeadings, seperator);
+        initUsingStream(outputStream);
+    }
+
+
+    /**
+     * Create new csv writer
+     *
+     * @param clazz       Class for bean
+     * @param append      Append to output
+     * @param hasHeadings Has the file headings, if this is a new file headers are automatically generated
+     * @param seperator   Seperator for csv file
+     */
+    private CsvWriter(Class<T> clazz, boolean append, boolean hasHeadings, String seperator) {
         this.clazz = clazz;
-        this.file = file;
         this.csvMetaDataReader = new CsvMetaDataReader<>(clazz);
         this.append = append;
         this.hasHeadings = hasHeadings;
         this.seperator = seperator;
-        init();
     }
 
     /**
@@ -142,8 +175,16 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
      * @throws IOException Error writing header to file
      */
     private void writeFileHeader(List<String> headings) throws IOException {
-        if (file.length() > 0 || !hasHeadings)
-            return;
+        // If file is null, only input stream is used, and this will ALWAYS add headings to the output
+        if (file != null) {
+            if (file.length() > 0 || !hasHeadings) {
+                return;
+            }
+        } else {
+            if (hasWrittenData) {
+                return;
+            }
+        }
 
         writeRawData(headings);
         bufferedWriter.flush();
@@ -157,6 +198,7 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
      */
     private void writeRawData(List<String> data) throws IOException {
         bufferedWriter.write(joinBySeperator(data) + Platform.getLineSeperator());
+        hasWrittenData = true;
     }
 
     private String[] mapByHeading(T bean) throws IllegalAccessException, IOException {
@@ -184,9 +226,9 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
      * @throws InstantiationException Error creating new instance of entity
      * @throws IOException            Error writing to file
      */
-    public void writeFileHeading() throws IllegalAccessException, InstantiationException, IOException {
+    public void writeFileHeading() throws IllegalAccessException, InstantiationException, IOException, NoSuchMethodException, InvocationTargetException {
         if (isHasHeadings()) {
-            mapByHeading(clazz.newInstance());
+            mapByHeading(clazz.getConstructor().newInstance());
         }
     }
 
@@ -215,12 +257,22 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
     }
 
     /**
-     * Init {@link BufferedWriter} and {@link FileWriter}
+     * Init {@link BufferedWriter} with file
      *
      * @throws IOException Error open file
      */
-    private void init() throws IOException {
-        bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file,append), StandardCharsets.UTF_8));
+    private void initUsingFile(File file) throws IOException {
+        this.file = file;
+        bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, append), StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Init {@link BufferedWriter} with output stream
+     *
+     * @param outputStream OutputStream to use
+     */
+    private void initUsingStream(OutputStream outputStream) {
+        bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
     }
 
     /**
@@ -267,6 +319,11 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
         private File file;
 
         /**
+         * OutputStream to use over file
+         */
+        private OutputStream outputStream;
+
+        /**
          * Seperator for lines
          */
         private String seperator = Seperator.SEMICOLON;
@@ -283,13 +340,24 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
         }
 
         /**
-         * Set file to read from
+         * Set file to write tos
          *
          * @param file CSV file
          * @return Current builder
          */
         public Builder<T> file(File file) {
             this.file = file;
+            return this;
+        }
+
+        /**
+         * Set outputsream to write to
+         *
+         * @param outputStream OutputStream to use for writing
+         * @return Current builder
+         */
+        public Builder<T> outputStream(OutputStream outputStream) {
+            this.outputStream = outputStream;
             return this;
         }
 
@@ -320,7 +388,15 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
         }
 
         public CsvWriter<T> build() throws IOException {
-            return new CsvWriter<>(clazz, file, append, hasHeadings, seperator);
+            if (this.outputStream != null && this.file != null) {
+                throw new IllegalArgumentException("Decide if you want to use an outputstream or an file, both at the same time are not supported!");
+            }
+
+            if (this.outputStream == null) {
+                return new CsvWriter<>(clazz, file, append, hasHeadings, seperator);
+            } else {
+                return new CsvWriter<>(clazz, outputStream, append, hasHeadings, seperator);
+            }
         }
 
     }

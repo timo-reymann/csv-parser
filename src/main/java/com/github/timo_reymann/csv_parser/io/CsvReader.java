@@ -226,8 +226,8 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * @throws InstantiationException Error creating bean instance, this occurs when
      *                                no default constructor without parameters is available or an exception is thrown during initalization
      */
-    private T mapByIndex(String[] data) throws IllegalAccessException, InstantiationException {
-        T obj = clazz.newInstance();
+    private T mapByIndex(String[] data) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        T obj = clazz.getConstructor().newInstance();
         HashMap<Object, Field> effectiveMapping = csvMetaDataReader.getEffectiveValueForColumnMapping();
         for (int i = 0, dataLength = data.length; i < dataLength; i++) {
             Field field = effectiveMapping.get(i);

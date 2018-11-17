@@ -14,7 +14,7 @@ To use primitive types you must use the boxed types.
 <dependency>
     <groupId>com.github.timo-reymann</groupId>
     <artifactId>csv-parser</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
@@ -76,6 +76,7 @@ class MyBean {
 CsvWriter<MyBean> writer = new CsvWriter.Builder<MyBean>()
              .forClass(MyBean.class)            // entity class
              .file(new File("customers.csv"))   // file
+             .outputStream(myInputStream)        // or even stream, but ATTENTION: an OutputStream will always be overwritten
              .noAppend()                        // replace file every time
              .build();
 
