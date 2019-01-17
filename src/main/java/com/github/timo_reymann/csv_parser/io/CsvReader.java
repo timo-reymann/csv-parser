@@ -65,6 +65,11 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
     private final Converter converter = new Converter();
 
     /**
+     * Mark if file has been read
+     */
+    private boolean hasReadData = false;
+
+    /**
      * Create CsvReader
      *
      * @param file       File to read
@@ -246,7 +251,13 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * @throws IOException Error reading line
      */
     private String[] readLineAndSplitBySeperator() throws IOException {
-        return splitBySeperator(bufferedReader.readLine());
+        if (hasReadData) {
+            return splitBySeperator(bufferedReader.readLine());
+        } else {
+            hasReadData = true;
+            String line = bufferedReader.readLine();
+            return splitBySeperator(line.replace("\uFEFF", ""));
+        }
     }
 
     /**
@@ -313,6 +324,8 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
      * @throws IOException Error while trying to close readers
      */
     public void close() throws IOException {
+        this.hasReadData = false;
+
         if (this.inputStream != null) {
             this.inputStream.close();
         }

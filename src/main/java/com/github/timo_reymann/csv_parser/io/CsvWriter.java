@@ -186,6 +186,7 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
             }
         }
 
+        bufferedWriter.write('\uFEFF');
         writeRawData(headings);
         bufferedWriter.flush();
     }

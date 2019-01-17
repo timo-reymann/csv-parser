@@ -16,7 +16,7 @@ public class FileHelper {
 
         String line;
         while ((line = expected.readLine()) != null) {
-            assertEquals(line, actual.readLine());
+            assertEquals(line, actual.readLine().replace("\uFEFF",""));
         }
 
         assertNull("Actual had more lines then the expected.", actual.readLine());
