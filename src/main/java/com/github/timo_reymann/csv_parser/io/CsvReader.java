@@ -208,7 +208,7 @@ public class CsvReader<T> implements AutoCloseable, Flushable, Closeable {
         }
 
         try {
-            converter.setField(field, obj, mapper.apply(value));
+            converter.setField(field, obj,value == null ? null : mapper.apply(value));
         } catch (Exception e) {
             throw new ParseException("Error assigning value '" + value + "' to field " + field.getName() + "", e);
         }

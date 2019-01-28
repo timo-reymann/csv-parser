@@ -104,7 +104,7 @@ public class CsvReaderTest extends CsvParserTestCase {
     public void testMappingOfStreamWithHeading() {
         List<TestEntityWithHeadings> collect = csvReaderWithHeading.lines().collect(Collectors.toList());
 
-        for (int i = 0; i < collect.size(); i++) {
+        for (int i = 0; i < collect.size() -1; i++) {
             TestEntityWithHeadings testEntityWithHeadings = collect.get(i);
             assertNotNull(collect);
             assertEquals(new Integer(i + 1), testEntityWithHeadings.getSomeNumber());
