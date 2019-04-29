@@ -77,6 +77,7 @@ public class CsvReader<T> implements AutoCloseable, Closeable {
      * @param file       File to read
      * @param clazz      Class of bean to read
      * @param hasHeading Has the file headers for column names
+     * @param seperator  Seperator
      * @throws FileNotFoundException File was not found on disk
      */
     public CsvReader(File file, Class<T> clazz, boolean hasHeading, String seperator) throws FileNotFoundException {
@@ -90,6 +91,7 @@ public class CsvReader<T> implements AutoCloseable, Closeable {
      * @param inputStream InputStream to read from
      * @param clazz       Class of bean to read
      * @param hasHeading  Has the file headers for column names
+     * @param seperator   Seperator
      */
     public CsvReader(InputStream inputStream, Class<T> clazz, boolean hasHeading, String seperator) {
         this(clazz, hasHeading, seperator);
