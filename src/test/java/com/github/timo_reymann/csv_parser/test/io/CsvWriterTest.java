@@ -5,6 +5,9 @@ import com.github.timo_reymann.csv_parser.test.CsvParserTestCase;
 import com.github.timo_reymann.csv_parser.test.helper.FileHelper;
 import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithHeadings;
 import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithNumericIndex;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,11 +23,10 @@ public class CsvWriterTest extends CsvParserTestCase {
     private CsvWriter<TestEntityWithNumericIndex> csvWriterNumericIndex;
     private CsvWriter<TestEntityWithHeadings> csvWriterHeadingIndex;
     private CsvWriter<TestEntityWithHeadings> csvWriterWithStream;
+    private CsvWriter<TestEntityWithHeadings> csvWriterHeadingsOnly;
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
-        super.setUp();
-
         csvWriterNumericIndex = new CsvWriter.Builder<TestEntityWithNumericIndex>()
                 .file(TMP_FILE_WRITE_NUMERIC)
                 .noAppend()
@@ -38,6 +40,14 @@ public class CsvWriterTest extends CsvParserTestCase {
                 .hasHeading()
                 .build();
 
+        csvWriterHeadingsOnly = new CsvWriter.Builder<TestEntityWithHeadings>()
+                .file(TMP_FILE_WRITE_HEADING)
+                .seperatedBy("|")
+                .noAppend()
+                .forClass(TestEntityWithHeadings.class)
+                .hasHeading()
+                .build();
+
         csvWriterWithStream = new CsvWriter.Builder<TestEntityWithHeadings>()
                 .outputStream(new FileOutputStream(TMP_FILE_WRITE_HEADING))
                 .noAppend()
@@ -46,9 +56,8 @@ public class CsvWriterTest extends CsvParserTestCase {
                 .build();
     }
 
-    @Override
+    @AfterEach
     protected void tearDown() throws Exception {
-        super.tearDown();
         if (TMP_FILE_WRITE_HEADING.exists()) {
             TMP_FILE_WRITE_HEADING.delete();
         }
@@ -58,6 +67,7 @@ public class CsvWriterTest extends CsvParserTestCase {
         }
     }
 
+    @Test
     public void testOutputStream() throws IllegalAccessException, IOException {
         writeFirstLineWithHeading(csvWriterWithStream);
         writeSecondLineWithHeading(csvWriterWithStream);
@@ -65,6 +75,7 @@ public class CsvWriterTest extends CsvParserTestCase {
         FileHelper.assertContentEquals(FileHelper.loadResourceFromTestClasspath("with_headings.csv"), TMP_FILE_WRITE_HEADING);
     }
 
+    @Test
     public void testWriteNumericIndex() throws IOException, IllegalAccessException {
         TestEntityWithNumericIndex testEntityWithNumericIndex = new TestEntityWithNumericIndex();
 
@@ -79,9 +90,10 @@ public class CsvWriterTest extends CsvParserTestCase {
         FileHelper.assertContentEquals(FileHelper.loadResourceFromTestClasspath("without_headings.csv"), TMP_FILE_WRITE_NUMERIC);
     }
 
+    @Test
     public void testHeadingWrite() throws IllegalAccessException, IOException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        csvWriterHeadingIndex.writeFileHeading();
-        csvWriterHeadingIndex.close();
+        csvWriterHeadingsOnly.writeFileHeading();
+        csvWriterHeadingsOnly.close();
         FileHelper.assertContentEquals(FileHelper.loadResourceFromTestClasspath("headings_only.csv"), TMP_FILE_WRITE_HEADING);
     }
 
@@ -109,6 +121,7 @@ public class CsvWriterTest extends CsvParserTestCase {
         csvWriterHeadingIndex.writeLine(testEntityWithHeadings);
     }
 
+    @Test
     public void testWriteHeading() throws IOException, IllegalAccessException {
         writeFirstLineWithHeading(csvWriterHeadingIndex);
         writeSecondLineWithHeading(csvWriterHeadingIndex);

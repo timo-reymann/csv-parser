@@ -49,7 +49,7 @@ public class CsvWriter<T> implements AutoCloseable, Closeable, Flushable {
     /**
      * Seperator for lines
      */
-    private String seperator = Seperator.SEMICOLON;
+    private String seperator;
 
     /**
      * Buffered Writer to write to file

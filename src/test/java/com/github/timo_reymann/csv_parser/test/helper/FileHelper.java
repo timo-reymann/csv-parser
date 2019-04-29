@@ -1,9 +1,13 @@
 package com.github.timo_reymann.csv_parser.test.helper;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 public class FileHelper {
     public static File loadResourceFromTestClasspath(String fileName) {
@@ -16,10 +20,10 @@ public class FileHelper {
 
         String line;
         while ((line = expected.readLine()) != null) {
-            assertEquals(line, actual.readLine().replace("\uFEFF",""));
+            assertEquals(line, actual.readLine().replace("\uFEFF", ""));
         }
 
-        assertNull("Actual had more lines then the expected.", actual.readLine());
-        assertNull("Expected had more lines then the actual.", expected.readLine());
+        assertNull(actual.readLine(), "Actual had more lines then the expected.");
+        assertNull(expected.readLine(), "Expected had more lines then the actual.");
     }
 }
