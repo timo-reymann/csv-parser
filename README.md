@@ -1,7 +1,6 @@
 # CSV-Parser
-
-[![Build Status](https://travis-ci.org/timo-reymann/csv-parser.svg?branch=master)](https://travis-ci.org/timo-reymann/csv-parser)
 [![Maven Central Version](https://maven-badges.herokuapp.com/maven-central/com.github.timo-reymann/csv-parser/badge.svg)](https://search.maven.org/search?q=g:com.github.timo-reymann%20AND%20a:csv-parser&core=gav)
+[![Build Status](https://travis-ci.org/timo-reymann/csv-parser.svg?branch=master)](https://travis-ci.org/timo-reymann/csv-parser)
 
 Parse csv files and other seperated values using java.
 
