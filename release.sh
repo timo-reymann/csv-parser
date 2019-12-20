@@ -4,10 +4,9 @@ set -e
 
 # Verify release type is present
 releaseType=$1
-if [ -z "$1" ]
-then
+if [ -z "$1" ]; then
   echo "Please specify release type!"
-  exit 2;
+  exit 2
 fi
 
 # Increase tag using git-semver-tag (https://github.com/timo-reymann/git-semver-tag)
