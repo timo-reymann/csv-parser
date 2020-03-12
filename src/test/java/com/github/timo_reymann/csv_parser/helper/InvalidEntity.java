@@ -1,4 +1,4 @@
-package com.github.timo_reymann.csv_parser.test.helper;
+package com.github.timo_reymann.csv_parser.helper;
 
 import com.github.timo_reymann.csv_parser.meta.CsvColumn;
 import lombok.Data;

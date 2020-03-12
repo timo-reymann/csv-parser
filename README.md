@@ -114,8 +114,12 @@ reader.lines().forEach(System.out::println);
 ```
 
 
-## Java 9/10/11
-The parser is compatible with Java 9+! There are only two things for you to do:
+## Supported java versions
+The parser is compatible with Java 11+.
+
+*If you need support for java 8 you must use version <= 3.1.0*
+
+There are only two things for you to do:
 1. Add to your module: ``requires com.github.timo_reymann.csv_parser``
 2. Open your package for reflection containing bean classes like this: ``opens my.entities to com.github.timo_reymann.csv_parser``
 
