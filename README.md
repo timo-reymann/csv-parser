@@ -17,7 +17,7 @@ To use primitive types you must use the boxed types.
 <dependency>
     <groupId>com.github.timo-reymann</groupId>
     <artifactId>csv-parser</artifactId>
-    <version>3.1.0</version>
+    <version>4.0.0</version>
 </dependency>
 ```
 

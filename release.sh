@@ -15,7 +15,7 @@ tag=$(git semver-tag -level "$1" 2>&1)
 # Set maven version
 mvn -B versions:set -DnewVersion=$tag
 
-rm pom.xml.versionsBackup
+rm pom.xml.versionsBackup || true
 
 # Clean and deploy to central
 mvn clean deploy
