@@ -1,10 +1,9 @@
-package com.github.timo_reymann.csv_parser.test.io;
+package com.github.timo_reymann.csv_parser.io;
 
-import com.github.timo_reymann.csv_parser.io.CsvWriter;
-import com.github.timo_reymann.csv_parser.test.CsvParserTestCase;
-import com.github.timo_reymann.csv_parser.test.helper.FileHelper;
-import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithHeadings;
-import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithNumericIndex;
+import com.github.timo_reymann.csv_parser.CsvParserTestCase;
+import com.github.timo_reymann.csv_parser.helper.FileHelper;
+import com.github.timo_reymann.csv_parser.helper.TestEntityWithHeadings;
+import com.github.timo_reymann.csv_parser.helper.TestEntityWithNumericIndex;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

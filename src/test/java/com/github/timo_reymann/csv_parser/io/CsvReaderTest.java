@@ -1,12 +1,10 @@
-package com.github.timo_reymann.csv_parser.test.io;
+package com.github.timo_reymann.csv_parser.io;
 
+import com.github.timo_reymann.csv_parser.CsvParserTestCase;
 import com.github.timo_reymann.csv_parser.exception.ParseException;
-import com.github.timo_reymann.csv_parser.io.CsvReader;
-import com.github.timo_reymann.csv_parser.io.Seperator;
-import com.github.timo_reymann.csv_parser.test.CsvParserTestCase;
-import com.github.timo_reymann.csv_parser.test.helper.FileHelper;
-import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithHeadings;
-import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithNumericIndex;
+import com.github.timo_reymann.csv_parser.helper.FileHelper;
+import com.github.timo_reymann.csv_parser.helper.TestEntityWithHeadings;
+import com.github.timo_reymann.csv_parser.helper.TestEntityWithNumericIndex;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -104,7 +101,7 @@ public class CsvReaderTest extends CsvParserTestCase {
     }
 
     private void testSecondLineWithHeadings(TestEntityWithHeadings testEntityWithHeadings) {
-        assertEquals(new Integer(2), testEntityWithHeadings.getSomeNumber());
+        assertEquals(Integer.valueOf(2), testEntityWithHeadings.getSomeNumber());
         assertEquals("Thöis is line2", testEntityWithHeadings.getSomeText());
         assertEquals(Boolean.TRUE, testEntityWithHeadings.getSomeBoolean());
         assertEquals(100.45, testEntityWithHeadings.getSomeDouble());

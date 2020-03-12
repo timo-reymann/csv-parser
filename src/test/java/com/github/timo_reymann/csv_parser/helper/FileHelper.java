@@ -1,4 +1,4 @@
-package com.github.timo_reymann.csv_parser.test.helper;
+package com.github.timo_reymann.csv_parser.helper;
 
 import java.io.BufferedReader;
 import java.io.File;

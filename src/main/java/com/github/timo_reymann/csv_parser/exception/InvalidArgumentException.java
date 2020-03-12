@@ -1,4 +1,4 @@
-package com.github.timo_reymann.csv_parser.io;
+package com.github.timo_reymann.csv_parser.exception;
 
 /**
  * Invalid argument for csv reader/writer builder
@@ -13,7 +13,7 @@ public class InvalidArgumentException extends RuntimeException {
      * @param argument Argument name
      * @param value    Value for argument
      */
-    InvalidArgumentException(String argument, Object value) {
+    public InvalidArgumentException(String argument, Object value) {
         super("Invalid value " + value + " for argument " + argument);
     }
 

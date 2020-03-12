@@ -1,5 +1,6 @@
 package com.github.timo_reymann.csv_parser.io;
 
+import com.github.timo_reymann.csv_parser.exception.InvalidArgumentException;
 import com.github.timo_reymann.csv_parser.exception.ParseException;
 import com.github.timo_reymann.csv_parser.meta.CsvMetaDataReader;
 import com.github.timo_reymann.csv_parser.util.Converter;

@@ -1,9 +1,8 @@
-package com.github.timo_reymann.csv_parser.test.meta;
+package com.github.timo_reymann.csv_parser.meta;
 
-import com.github.timo_reymann.csv_parser.meta.CsvMetaDataReader;
-import com.github.timo_reymann.csv_parser.test.helper.InvalidEntity;
-import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithHeadings;
-import com.github.timo_reymann.csv_parser.test.helper.TestEntityWithNumericIndex;
+import com.github.timo_reymann.csv_parser.helper.InvalidEntity;
+import com.github.timo_reymann.csv_parser.helper.TestEntityWithHeadings;
+import com.github.timo_reymann.csv_parser.helper.TestEntityWithNumericIndex;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +19,6 @@ public class CsvMetaDataReaderTest {
         Assertions.assertNotNull(someNumberCol);
         Assertions.assertEquals(Field.class, someNumberCol.getClass());
         Assertions.assertEquals(Integer.class, someNumberCol.getType());
-        Assertions.assertTrue(someNumberCol.isAccessible());
 
         Field someTextCol = effectiveValueForColumnMapping.get("someTextCol");
         Assertions.assertNotNull(someTextCol);
